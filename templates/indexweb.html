@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Song Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        var globalStoreEmothion = ""
+    </script>
+    <!--link rel="stylesheet" href="../static/font-awesome-4.7.0/font-awesome-4.7.0/css/font-awesome.min.css"-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+</head>
+<body>
+    <div class="top-menu">
+        <span style="margin-right:75%">Emoziek</span>
+        <a href="#chatTab" class="menu-item"><i class='far fa-comment' style='font-size:24px;margin-right: 5px;'></i>Chat</a>
+        <a href="#about" class="menu-item"><i class="fa fa-address-card" style="font-size:24px;margin-right: 5px;"></i>About</a>
+        <a href="#rating" class="menu-item"><i class="fa fa-star" aria-hidden="true" style="font-size:24px;margin-right: 5px;"></i>Rating</a>
+        <a href="#" class="menu-item">&nbsp;</a>
+
+    </div>
+    <div class="gray-section top-section" style="margin: 60px; text-align: center; padding: 150px;background-image: url('../static/topImage.jpeg');">
+        <div class="big-font-text">Chatbot Song Recommendation System</div>
+        <div class="gray-text">Chatbot Recommendation System is a web app where users can chat with the chatbot, and based on the chats, songs will be recommended using Last.fm.</div>
+    </div>
+    <div id="intro" class="content-section">
+        <h2>Introduction</h2>
+        <div class="intro-text">
+            <p>Hey, I am Alex.</p>
+            <img src="{{ url_for('static', filename='botchat123.png') }}" alt="Bot chat" class="lastfm-image">
+            <p>I am sure I can predict your mood and suggest you amazing songs. Want to give it a try? Come, let's chat.</p>
+        </div>
+
+    </div>
+    <div class="blue-line"></div> <!-- Blue line between sections -->
+    <div id="tone-analyzer" class="content-section">
+        <h2>IBM - Natural Language Understanding</h2>
+        <div class="tone-text">
+            <p>People show various tones, such as joy, sadness, anger in daily communications.</p>
+            <p>Natural Language Understanding leverages this information to understand emotions.</p>
+        </div>
+        <img src="{{ url_for('static', filename='ibm_watson.jpg') }}" alt="Last.fm Image" class="lastfm-image">
+
+    </div>
+    <div class="blue-line"></div> <!-- Blue line between sections -->
+    <div id="last-fm" class="content-section">
+        <h2>Last.fm</h2>
+        <div class="lastfm-text">
+            <p>Last.fm is a music service that builds personal profiles by connecting to music streaming apps like iTunes, Spotify, and others.</p>
+            <p>Through the Last.fm songs API, we make requests to the server to provide songs based on the emotion analyzed by the Tone Analyzer.</p>
+        </div>
+        <img src="{{ url_for('static', filename='lastFm.png') }}" alt="Last.fm Image" class="lastfm-image">
+
+    </div>
+    <div class="blue-line"></div> <!-- Blue line between sections -->
+    <div id="last-fm-last" class="content-section">
+        <h2>Chatbot</h2>
+        <div class="lastfm-text">
+            <p>Last.fm is a music service that builds personal profiles by connecting to music streaming apps like iTunes, Spotify, and others.</p>
+            <p>Through the Last.fm songs API, we make requests to the server to provide songs based on the emotion analyzed by the Tone Analyzer.</p>
+        </div>
+        <img src="{{ url_for('static', filename='multiimage.png') }}" alt="Last.fm Image" class="multi-image">
+
+    </div>
+    <div id="chatTab" class="content-section">
+        <h2>Let's chat now...</h2>
+        <div class="chat-window">
+            <div class="chat" id="chat">
+
+                <!-- Default message from the chatbot -->
+            <div class="chat-message bot-message">
+                <img src="static/chatbot-icon.png" alt="Chatbot Icon" class="chat-icon" style="float: left;">
+                <p>Hi, I am Alex! Let's chat now...</p>
+            </div>
+            </div>
+        </div>
+        
+        <div class="send-button-container">
+            <input type="text"  id="user_input" placeholder="Type here..." onkeypress="handleKeyPress(event)" />
+            <svg id="send-button" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="sendMessage()">
+                <path d="M5.83301 16.6665L12.5 10.0002L5.83301 3.33317" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <div class="recommendation-button-container">
+             <!-- Loading message with image -->
+             <div class="loading-message" id="loadingMessage">
+                <p>Loading...</p>
+                <img class="loading-image" src="../static/loading.gif" alt="Loading">
+            </div>
+            <div class="parent">
+                <button class="button" id="recommendation_btn" >
+                  <span class="icon" style="font-size: 100px !important;"></span>
+                  <i class='fas fa-music' style="margin-right: 5px;"></i> GET SONG RECOMMENDATION
+                </button>
+            </div>
+               
+        </div>
+
+        <div class="recommendation-songs-container" id="threecolumns" style="min-height: 300px;margin: 0 8%">
+            
+            <div class="parent_3col">
+                <table>
+                    <tr>
+                      <td class="column">
+                        <div class="icon">                    <img src="../static/threecol_1.png"/>
+                        </i></div>
+                      </td>
+                      <td class="column"style="text-align: center;">
+                        <div class="icon">😊</div>
+                        <div class="text">Emotion/Mood</div>
+                        <span id="emotion_span" style="margin:15px 50px;color: red;font-style: italic;font-weight: bolder;"></span>
+                      </td>
+                      <td class="column">
+                        <div class="icon">                    <img src="../static/threecol_2.png"/>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+            </div>
+            <div id="songsList">
+                <h2>List of recommended songs.</h2>
+                    <div id="listSongs" style="margin-left: 20%;">
+                    </div>
+            </div>
+        </div>
+    </div>
+   
+    
+    <div class="blue-line"></div> <!-- Blue line between sections -->
+    <div id="about" class="content-section">
+        <h2>About Us</h2>
+        <div class="team-members">
+                <table style="width: 60%;">
+                    <tr>
+                      <td class="column">
+                        <div class="team-member">
+                            <div class="name" style="font-weight: bold;">Anjana Bharti</div>
+                            <div class="email">anjanabharti4000@gmail.com</div>
+                            <div class="mobile">+91 6005807347</div>
+                        </div>
+                      </td>
+                      <td class="column">
+                        <div class="icon"></div></td>
+                      <td class="column">
+                        <div class="team-member">
+                            <div class="name" style="font-weight: bold;">Mehak Bandrai</div>
+                            <div class="email">bandraimehak@example.com</div>
+                            <div class="mobile">+91 9149678310</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+            
+            
+            <!-- Add more team member details here -->
+        </div>
+    </div>
+
+    <div class="blue-line"></div> <!-- Blue line between sections -->
+    <img src="{{ url_for('static', filename='aleximg1.png') }}" alt="Alex Image" class="aleximg1-image">
+
+    <div class="blue-line"></div> <!-- Blue line between sections -->
+    <div id="rating" class="content-section" style="margin: 60px;">
+        <h2>Rate us</h2>
+        <div class="rating-form">
+            <h2>Rate Your Experience</h2>
+            <form action="/submit_rating" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+    
+                <label for="mobile">Mobile:</label>
+                <input type="tel" id="mobile" name="mobile" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                <small>Format: 123-456-7890</small>
+    
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="">Select rating</option>
+                    <option value="5">5 stars</option>
+                    <option value="4">4 stars</option>
+                    <option value="3">3 stars</option>
+                    <option value="2">2 stars</option>
+                    <option value="1">1 star</option>
+                </select>
+    
+                <label for="feedback">Feedback:</label>
+                <textarea id="feedback" name="feedback" rows="4" required></textarea>
+    
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+
+    <script>
+       document.getElementById("recommendation_btn").addEventListener("click", function(e) {
+  // Show the loading message
+  var buttonRect = e.target.getBoundingClientRect();
+  console.log(e)
+  var loadingMessage = document.getElementById("loadingMessage");
+  loadingMessage.style.visibility = "visible";
+  display_and_sendMessage();
+  // Simulate loading time with a setTimeout
+  setTimeout(function() {
+    // Hide the loading message after a delay
+    loadingMessage.style.visibility = "hidden";
+  }, 2000); // Adjust the delay time (in milliseconds) as needed
+});
+        </script>
+</body>
+</html>
